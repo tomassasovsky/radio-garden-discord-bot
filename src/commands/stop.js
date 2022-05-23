@@ -1,7 +1,8 @@
 const { getVoiceConnection } = require('@discordjs/voice');
 const { Interaction } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
-async function stopHandler(interaction = Interaction) {
+async function stop(interaction = Interaction) {
   const connection = getVoiceConnection(interaction.guildId);
 
   if (!connection) {
@@ -20,5 +21,8 @@ async function stopHandler(interaction = Interaction) {
 }
 
 module.exports = {
-  stopHandler
+  data: new SlashCommandBuilder()
+    .setName('stop')
+    .setDescription('Stops playing the current radio.'),
+  async execute(interaction) { return stop(interaction); },
 };

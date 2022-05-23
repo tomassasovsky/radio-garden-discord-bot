@@ -1,22 +1,21 @@
-const { radioByName } = require('./radio-helpers.js');
+const { radioByName } = require('../radio-helpers.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const URL_LISTEN = "https://radio.garden/api/ara/content/listen/";
 const URL_CONTENT = "https://radio.garden";
 
 const {
   createAudioPlayer,
-  NoSubscriberBehavior,
   createAudioResource,
   joinVoiceChannel,
   VoiceConnectionStatus,
   getVoiceConnection,
   AudioPlayerStatus,
-  AudioPlayerEvents,
 } = require('@discordjs/voice');
 
 const { MessageEmbed, Interaction } = require('discord.js');
 
-async function playHandler(interaction = Interaction) {
+async function play(interaction = Interaction) {
   if (!interaction.member.voice.channelId) {
     interaction.reply('You must be in a voice channel to use this command.');
     return;
@@ -86,18 +85,31 @@ async function playHandler(interaction = Interaction) {
       console.error(error);
       await player.disconnect();
       await interaction.reply('An error occurred while playing the radio.');
+      return;
     });
 
-    await interaction.reply({ content: 'Playing...', embeds: [embed] });
+    await interaction.reply({
+      content: 'Playing...',
+      embeds: [embed],
+    });
   }
 
   if (wasConnected) {
     await play();
   } else {
-    connection.on(VoiceConnectionStatus.Ready, play);
+    connection.once(VoiceConnectionStatus.Ready, play);
   }
 }
 
 module.exports = {
-  playHandler
+  data: new SlashCommandBuilder()
+    .setName('play')
+    .setDescription('Plays a given radio if found.')
+    .addStringOption(option =>
+      option
+        .setName('radio')
+        .setRequired(true)
+        .setDescription('The radio to play.'),
+    ),
+  async execute(interaction) { return play(interaction); },
 };
