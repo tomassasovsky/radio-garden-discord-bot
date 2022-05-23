@@ -9,7 +9,9 @@ const {
   createAudioResource,
   joinVoiceChannel,
   VoiceConnectionStatus,
-  getVoiceConnection
+  getVoiceConnection,
+  AudioPlayerStatus,
+  AudioPlayerEvents,
 } = require('@discordjs/voice');
 
 const { MessageEmbed, Interaction } = require('discord.js');
@@ -42,6 +44,7 @@ async function playHandler(interaction = Interaction) {
 
   let connection = getVoiceConnection(interaction.guildId);
   if (!connection) {
+    console.log('No voice connection found, creating one');
     wasConnected = false;
     connection = joinVoiceChannel({
       channelId: interaction.member.voice.channelId,
@@ -53,26 +56,37 @@ async function playHandler(interaction = Interaction) {
   const play = async () => {
     let player = connection.state.subscription?.player;
     if (!player) {
-      player = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Stop,
-        },
-      });
+      console.log('No player found, creating one');
+      player = createAudioPlayer();
       connection.subscribe(player);
     }
 
     const sourceUrl = `${URL_LISTEN}${urlId}/channel.mp3`;
 
-    player.stop();
+    if (player.state == AudioPlayerStatus.Paused) {
+      console.log('Player is disconnected, connecting');
+      await player.connect();
+    }
 
-    resource = createAudioResource(sourceUrl, { inlineVolume: true });
-    resource.volume.setVolume(1);
+    if (player.checkPlayable()) {
+      player.stop();
+    }
+
+    resource = createAudioResource(sourceUrl);
     player.play(resource);
 
     const embed = new MessageEmbed()
       .setTitle(title)
       .setURL(URL_CONTENT + url)
       .setDescription(subtitle);
+
+    console.log(`Starting to play: ${title, subtitle, sourceUrl}`);
+
+    player.on('error', async error => {
+      console.error(error);
+      await player.disconnect();
+      await interaction.reply('An error occurred while playing the radio.');
+    });
 
     await interaction.reply({ content: 'Playing...', embeds: [embed] });
   }

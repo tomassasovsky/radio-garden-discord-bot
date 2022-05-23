@@ -25,6 +25,8 @@ async function main() {
   client.on('interactionCreate', async interaction => {
     const { commandName, customId } = interaction;
 
+    console.log(`Received: ${commandName, customId}`);
+
     const commandHandlers = {
       'play': playHandler,
       'search': searchHandler,
