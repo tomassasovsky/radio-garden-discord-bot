@@ -22,7 +22,20 @@ async function play(interaction = Interaction) {
   }
 
   const radioOption = interaction.options?.get('radio');
-  const radio = radioOption?.value ?? interaction.values[0];
+  console.log(interaction);
+
+  const { customId } = interaction;
+
+  let radio;
+  if (radioOption) {
+    radio = radioOption?.value;
+  } else if (customId) {
+    const indexOfSpace = customId.indexOf(' ');
+    radio = customId.substring(indexOfSpace + 1);
+  } else if (interaction.values) {
+    radio = interaction.values[0];
+  }
+
   if (!radio) {
     interaction.reply('You need to specify a radio name');
     return;
@@ -83,6 +96,7 @@ async function play(interaction = Interaction) {
       .addComponents(
         new MessageButton()
           .setCustomId(`play ${title}`)
+          .setStyle('PRIMARY')
           .setEmoji('🔁')
       )
 
