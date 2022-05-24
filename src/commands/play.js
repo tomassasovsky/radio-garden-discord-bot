@@ -25,19 +25,26 @@ async function play(interaction = Interaction) {
   }
 
   const radioOption = interaction.options?.get('radio');
-  console.log(interaction);
-
   const { customId } = interaction;
 
   let radio;
+
+  console.log('value: ', radioOption?.value);
+  console.log('customid: ', customId);
+  console.log('option values: ', radioOption?.values);
+
   if (radioOption) {
     radio = radioOption?.value;
   } else if (customId) {
-    const indexOfSpace = customId.indexOf(' ');
-    radio = customId.substring(indexOfSpace + 1);
-  } else if (interaction.values) {
-    radio = interaction.values[0];
+    if (interaction.values) {
+      radio = interaction.values[0];
+    } else {
+      const indexOfSpace = customId.indexOf(' ');
+      radio = customId.substring(indexOfSpace + 1);
+    }
   }
+
+  console.log(radio);
 
   if (!radio) {
     interaction.reply({
