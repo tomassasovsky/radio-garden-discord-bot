@@ -22,7 +22,7 @@ async function play(interaction = Interaction) {
   }
 
   const radioOption = interaction.options?.get('radio');
-  const radio = radioOption?.value ?? interaction.customId?.substring(5);
+  const radio = radioOption?.value ?? interaction.values[0];
   if (!radio) {
     interaction.reply('You need to specify a radio name');
     return;

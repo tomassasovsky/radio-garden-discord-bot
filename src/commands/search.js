@@ -1,41 +1,44 @@
 const { searchRadios } = require('../utils/radio-helpers.js');
-const { MessageEmbed, MessageActionRow, MessageButton, Interaction } = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageButton, Interaction, MessageSelectMenu } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const URL_CONTENT = "https://radio.garden";
 
 async function search(interaction = Interaction) {
   const radioOption = interaction.options.get('radio');
-  const radio = radioOption.value;
-  if (!radio) {
+  const { value } = radioOption;
+  if (!value) {
     interaction.reply('You need to specify a radio name');
     return;
   }
 
-  const radios = await searchRadios(radio);
+  const radios = await searchRadios(value);
   if (!radios) {
-    interaction.reply(`No radio found for ${radio}`);
+    interaction.reply(`No radio found for ${value}`);
     return;
   }
 
-  const { subtitle, title, url } = radios[0]?._source;
-
-  const embed = new MessageEmbed()
-    .setTitle(title)
-    .setURL(URL_CONTENT + url)
-    .setDescription(subtitle);
-
   const row = new MessageActionRow()
     .addComponents(
-      new MessageButton()
-        .setCustomId(`play ${title}`)
-        .setLabel('Play')
-        .setStyle('PRIMARY'),
-    );
+      new MessageSelectMenu()
+        .setCustomId('play')
+        .setPlaceholder('Nothing selected')
+    )
+
+  for (const radio of radios.slice(0, 10)) {
+    const { subtitle, title } = radio._source;
+
+    row.components[0].addOptions([
+      {
+        label: title,
+        description: subtitle,
+        value: title,
+      },
+    ]);
+  }
 
   await interaction.reply({
-    content: 'We found this radio:',
-    embeds: [embed],
+    content: 'We found these radios:',
     components: [row],
   });
 }
