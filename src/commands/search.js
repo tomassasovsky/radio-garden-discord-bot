@@ -13,7 +13,7 @@ async function search(interaction = Interaction) {
   }
 
   const radios = await searchRadios(value);
-  if (!radios) {
+  if (!radios || radios.length === 0) {
     interaction.reply(`No radio found for ${value}`);
     return;
   }
