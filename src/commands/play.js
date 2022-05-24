@@ -13,7 +13,7 @@ const {
   AudioPlayerStatus,
 } = require('@discordjs/voice');
 
-const { MessageEmbed, Interaction } = require('discord.js');
+const { MessageEmbed, Interaction, MessageActionRow, MessageButton } = require('discord.js');
 
 async function play(interaction = Interaction) {
   if (!interaction.member.voice.channelId) {
@@ -79,6 +79,13 @@ async function play(interaction = Interaction) {
       .setURL(URL_CONTENT + url)
       .setDescription(subtitle);
 
+    const row = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setCustomId(`play ${title}`)
+          .setEmoji('🔁')
+      )
+
     console.log(`Starting to play: ${title, subtitle, sourceUrl}`);
 
     player.on('error', async error => {
@@ -91,6 +98,7 @@ async function play(interaction = Interaction) {
     await interaction.reply({
       content: 'Playing...',
       embeds: [embed],
+      components: [row],
     });
   }
 

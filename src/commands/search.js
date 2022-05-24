@@ -2,8 +2,6 @@ const { searchRadios } = require('../utils/radio-helpers.js');
 const { MessageEmbed, MessageActionRow, MessageButton, Interaction, MessageSelectMenu } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const URL_CONTENT = "https://radio.garden";
-
 async function search(interaction = Interaction) {
   const radioOption = interaction.options.get('radio');
   const { value } = radioOption;
