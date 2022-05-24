@@ -17,9 +17,11 @@ client.once('ready', () => {
 });
 
 client.on('interactionCreate', async interaction => {
+  const { commandName, customId } = interaction;
+
   // parse the command
   const command = client.commands.get(
-    interaction.commandName ?? interaction.customId?.split(' ')[0]
+    commandName ?? customId?.split(' ')[0]
   );
 
   if (!command) return;
