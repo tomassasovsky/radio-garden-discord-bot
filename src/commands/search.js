@@ -12,7 +12,10 @@ async function search(interaction = Interaction) {
 
   const radios = await searchRadios(value);
   if (!radios || radios.length === 0) {
-    interaction.reply(`No radio found for ${value}`);
+    interaction.reply({
+      content: `No radio found for ${value}`,
+      ephemeral: true,
+    });
     return;
   }
 
@@ -37,6 +40,7 @@ async function search(interaction = Interaction) {
 
   await interaction.reply({
     content: 'We found these radios:',
+    ephemeral: true,
     components: [row],
   });
 }

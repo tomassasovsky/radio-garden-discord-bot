@@ -17,7 +17,10 @@ const { MessageEmbed, Interaction, MessageActionRow, MessageButton } = require('
 
 async function play(interaction = Interaction) {
   if (!interaction.member.voice.channelId) {
-    interaction.reply('You must be in a voice channel to use this command.');
+    interaction.reply({
+      content: 'You must be in a voice channel to use this command.',
+      ephemeral: true
+    });
     return;
   }
 
@@ -37,13 +40,19 @@ async function play(interaction = Interaction) {
   }
 
   if (!radio) {
-    interaction.reply('You need to specify a radio name');
+    interaction.reply({
+      content: 'You need to specify a radio name',
+      ephemeral: true
+    });
     return;
   }
 
   const result = await radioByName(radio);
   if (!result) {
-    interaction.reply(`No radio found for ${radio}`);
+    interaction.reply({
+      content: `No radio found for ${radio}`,
+      ephemeral: true,
+    });
     return;
   }
 
@@ -105,12 +114,16 @@ async function play(interaction = Interaction) {
     player.on('error', async error => {
       console.error(error);
       await player.disconnect();
-      await interaction.reply('An error occurred while playing the radio.');
+      await interaction.reply({
+        content: 'An error occurred while playing the radio.',
+        ephemeral: true,
+      });
       return;
     });
 
     await interaction.reply({
       content: 'Playing...',
+      ephemeral: true,
       embeds: [embed],
       components: [row],
     });
