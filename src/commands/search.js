@@ -1,4 +1,4 @@
-const { searchRadios } = require('../radio-helpers.js');
+const { searchRadios } = require('../utils/radio-helpers.js');
 const { MessageEmbed, MessageActionRow, MessageButton, Interaction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 

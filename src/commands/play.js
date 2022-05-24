@@ -1,4 +1,4 @@
-const { radioByName } = require('../radio-helpers.js');
+const { radioByName } = require('../utils/radio-helpers.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const URL_LISTEN = "https://radio.garden/api/ara/content/listen/";
